@@ -33,7 +33,7 @@ public class MiniProject {
 
             try {
                 int choice = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
+                scanner.nextLine();
 
                 switch (choice) {
                     case 1:
@@ -68,30 +68,46 @@ public class MiniProject {
     }
 
     private static void loadStudentData(String filename) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            studentCount = Integer.parseInt(reader.readLine().trim());
-            if (studentCount <= 0) {
-                System.out.println("Error: The file contains no student data.");
-                return;
-            }
+    try {
+        
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
 
-            studentNames = new String[studentCount];
-            studentGrades = new int[studentCount];
 
-            for (int i = 0; i < studentCount; i++) {
-                studentNames[i] = reader.readLine().trim();
-                studentGrades[i] = Integer.parseInt(reader.readLine().trim());
-            }
+        studentCount = Integer.parseInt(reader.readLine().trim());
 
-            System.out.println("Student data loaded successfully.");
-        } catch (FileNotFoundException e) {
-            System.out.println("Error: File not found. Please ensure the file path is correct.");
-        } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
-        } catch (NumberFormatException e) {
-            System.out.println("Error: Invalid file format. Please check the data in the file.");
+       
+        if (studentCount <= 0) {
+            System.out.println("Error: No student data found in the file.");
+            return;
         }
+
+        // arrays to store student names and grades
+        studentNames = new String[studentCount];
+        studentGrades = new int[studentCount];
+
+        // Read student names and grades
+        for (int i = 0; i < studentCount; i++) {
+            studentNames[i] = reader.readLine().trim(); 
+            studentGrades[i] = Integer.parseInt(reader.readLine().trim());
+        }
+
+        // Close the file after reading all data
+        reader.close();
+
+        // Confirm successful data loading
+        System.out.println("Student Data Loaded Successfully!");
+    } catch (FileNotFoundException e) {
+        // Handle when the file is not found
+        System.out.println("Error: File not found. Please check the file path: " + filename);
+    } catch (IOException e) {
+        // Handle errors
+        System.out.println("Error while reading the file: " + e.getMessage());
+    } catch (NumberFormatException e) {
+        System.out.println("Error: The file contains invalid data. Please verify its content.");
     }
+}
+
+   
 
     private static void displayStudentInformation() {
         if (studentNames == null || studentGrades == null) {
@@ -106,27 +122,31 @@ public class MiniProject {
     }
 
     private static void findStudentGrade(Scanner scanner) {
-        if (studentNames == null) {
-            System.out.println("No data available. Please load student data first.");
-            return;
-        }
+    // Check for loaded
+    if (studentNames == null || studentGrades == null) {
+        System.out.println("No data available. Please load student data first.");
+        return;
+    }
 
-        System.out.print("Enter the student's name: ");
-        String name = scanner.nextLine();
-        boolean found = false;
+    System.out.print("Enter the student's name: ");
+    String name = scanner.nextLine().trim();
 
-        for (int i = 0; i < studentCount; i++) {
-            if (studentNames[i].equalsIgnoreCase(name)) {
-                System.out.printf("Grade for %s: %d%n", name, studentGrades[i]);
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            System.out.println("Student not found.");
+    // Search for the student's name in list
+    boolean isFound = false;
+    for (int i = 0; i < studentCount; i++) {
+        if (studentNames[i].equalsIgnoreCase(name)) { 
+            
+            System.out.printf("Grade for %s: %d%n", studentNames[i], studentGrades[i]);
+            isFound = true;
+            break;
         }
     }
+
+    if (!isFound) {
+        System.out.println("Error: Student not found. Please try again.");
+    }
+}
+
 
     private static void calculateClassAverage() {
         if (studentGrades == null) {
@@ -175,3 +195,4 @@ public class MiniProject {
         }
     }
 }
+
